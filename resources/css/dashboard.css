@@ -1,0 +1,385 @@
+/* Paleta de cores atualizada */
+:root {
+    --primary-color: #2563eb;
+    --primary-color-dark: #1e40af;
+    --secondary-color: #4b5563;
+    --background-color: #f9fafb;
+    --card-background: #ffffff;
+    --text-color: #1f2937;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+    --shadow-color: rgba(37, 99, 235, 0.15);
+}
+
+/* Reset e base */
+body {
+    background-color: var(--background-color);
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Container */
+.container-fluid {
+    padding: 1rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 80vh;
+}
+
+/* Header do Dashboard */
+.dashboard-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    text-align: center;
+}
+
+.dashboard-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: 0.05em;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Filter bar */
+.filter-bar {
+    background: var(--card-background);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.filter-bar label {
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-bar select,
+.filter-bar input[type="date"],
+.filter-bar input[type="text"] {
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-bar select:focus,
+.filter-bar input[type="date"]:focus,
+.filter-bar input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px var(--primary-color);
+}
+
+/* Botões exportação e dark mode */
+.export-btn, .quick-action-btn {
+    background: var(--primary-color);
+    color: white !important;
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 16px var(--shadow-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.export-btn:hover, .quick-action-btn:hover {
+    background: var(--primary-color-dark);
+    transform: scale(1.05);
+}
+
+.export-btn:active, .quick-action-btn:active {
+    transform: scale(0.95);
+}
+
+.export-btn i, .quick-action-btn i {
+    font-size: 1.3rem;
+}
+
+/* Quick actions container */
+.quick-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* KPI Cards */
+.kpi-card {
+    background: var(--card-background);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    cursor: default;
+}
+
+.kpi-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px var(--shadow-color);
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--card-color);
+    border-radius: 20px 20px 0 0;
+}
+
+.kpi-number {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin: 0;
+    color: var(--card-color);
+    line-height: 1;
+}
+
+.kpi-label {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    font-weight: 600;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.kpi-icon {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 2.5rem;
+    opacity: 0.15;
+    color: var(--card-color);
+}
+
+/* Cores para KPIs */
+.kpi-total { --card-color: #2563eb; }
+.kpi-new { --card-color: #fbbf24; }
+.kpi-progress { --card-color: #3b82f6; }
+.kpi-pending { --card-color: #8b5cf6; }
+.kpi-resolved { --card-color: #10b981; }
+.kpi-overdue { --card-color: #ef4444; }
+.kpi-sla { --card-color: #2563eb; }
+.kpi-satisfaction { --card-color: #f59e0b; }
+.kpi-reopened { --card-color: #dc2626; }
+.kpi-user { --card-color: #06b6d4; }
+.kpi-export { --card-color: #374151; }
+
+/* Gráficos */
+.chart-container {
+    position: relative;
+    height: 300px;
+    padding: 1rem;
+    background: var(--card-background);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: box-shadow 0.3s ease;
+}
+
+.chart-container:hover {
+    box-shadow: 0 12px 32px var(--shadow-color);
+}
+
+/* Lista moderna */
+.modern-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.modern-list-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.modern-list-item:hover {
+    background: #f3f4f6;
+    border-radius: 8px;
+    margin: 0 -1rem;
+    padding: 1rem;
+}
+
+.modern-list-item:last-child {
+    border-bottom: none;
+}
+
+.modern-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    background: #e0e7ff;
+}
+
+/* Tipografia */
+.modern-title {
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.modern-subtitle {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.modern-badge {
+    background: #e5e7eb;
+    color: var(--secondary-color);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Botões rápidos */
+.quick-action-btn {
+    background: var(--primary-color);
+    color: white !important;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 16px var(--shadow-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.quick-action-btn:hover {
+    background: var(--primary-color-dark);
+    transform: scale(1.05);
+}
+
+.quick-action-btn:active {
+    transform: scale(0.95);
+}
+
+/* Dark mode */
+.dark-mode {
+    background: #1f2937 !important;
+    color: #d1d5db !important;
+}
+
+.dark-mode .kpi-card,
+.dark-mode .filter-bar,
+.dark-mode .chart-container {
+    background: #374151 !important;
+    color: #d1d5db !important;
+}
+
+.dark-mode .dashboard-header {
+    background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
+}
+
+.dark-mode .dashboard-title {
+    color: #d1d5db !important;
+}
+
+.dark-mode .filter-bar label {
+    color: #d1d5db !important;
+}
+
+.dark-mode .kpi-label {
+    color: #9ca3af !important;
+}
+
+.dark-mode .modern-list-item:hover {
+    background: #4b5563 !important;
+}
+
+.dark-mode .ranking-avatar {
+    background: #4b5563 !important;
+    color: #f9fafb !important;
+}
+
+.dark-mode .ranking-score {
+    color: #fbbf24 !important;
+}
+
+.dark-mode .timeline-title {
+    color: #d1d5db !important;
+}
+
+.dark-mode .quick-action-btn {
+    background: #2563eb !important;
+    color: #f9fafb !important;
+}
+
+.dark-mode .quick-action-btn:hover {
+    background: #1e40af !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .dashboard-title {
+        font-size: 2.2rem;
+    }
+    
+    .kpi-number {
+        font-size: 2.8rem;
+    }
+    
+    .metric-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .chart-container {
+        height: 220px;
+    }
+}
