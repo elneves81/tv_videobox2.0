@@ -1,22 +1,23 @@
-# 📺 TV Box App
+# 🏥 Sistema TV UBS Guarapuava
 
-Um aplicativo de entretenimento otimizado para TV Box/Android TV, desenvolvido com React Native e Expo.
+Sistema completo de TV educativa para Unidades Básicas de Saúde (UBS) de Guarapuava, desenvolvido para exibir vídeos educativos automaticamente nas salas de espera.
 
-## 🚀 Características
+## 🚀 Características Principais
 
-- **Interface otimizada para TV**: Design especial para controle remoto e navegação por D-pad
-- **Player de vídeo nativo**: Reprodução fluida de vídeos com controles customizados
-- **Layout responsivo**: Otimizado para telas grandes (1080p/4K)
-- **Performance leve**: Bundle otimizado para dispositivos TV Box
-- **Navegação intuitiva**: Fácil navegação com controle remoto
+- **Reprodução Automática 24h**: Vídeos educativos passam automaticamente
+- **Painel Administrativo**: Gestão completa de vídeos e monitoramento
+- **QR Codes**: Pacientes podem assistir no celular
+- **4 Configuradores Automáticos**: Instalação super fácil nas TVs
+- **Monitoramento em Tempo Real**: Status de todas as TVs dos postos
+- **Envio Direcionado**: Vídeos específicos para postos selecionados
 
 ## 🛠️ Tecnologias
 
-- **React Native** + **Expo**
-- **TypeScript** para type safety
-- **React Navigation** para navegação
-- **Expo AV** para reprodução de mídia
-- **Linear Gradient** para efeitos visuais
+- **Frontend**: HTML5 + CSS3 + JavaScript
+- **Backend**: Node.js + Express
+- **Mobile**: React Native + Expo (opcional)
+- **Armazenamento**: JSON (portável e simples)
+- **Automação**: PowerShell + Python + Batch
 
 ## 📱 Funcionalidades
 
