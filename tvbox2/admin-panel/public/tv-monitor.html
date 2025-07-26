@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento TV - UBS Guarapuava</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: #2c3e50;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Status das TVs */
+        .tv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tv-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tv-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .tv-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-online {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-offline {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .tv-info {
+            margin-bottom: 15px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .video-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .video-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .video-item:last-child {
+            border-bottom: none;
+        }
+
+        .video-title {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .video-category {
+            font-size: 12px;
+            color: #7f8c8d;
+            background: #ecf0f1;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Envio de Vídeos */
+        .send-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .video-selector, .unit-selector {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .checkbox-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .checkbox-item label {
+            flex: 1;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .item-info {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-left: 25px;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .send-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Log de Envios */
+        .log-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .log-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .log-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .log-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .log-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .timestamp {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .indicator-online {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+
+        .indicator-offline {
+            background: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .refresh-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            float: right;
+            margin-bottom: 20px;
+        }
+
+        .refresh-button:hover {
+            background: #2980b9;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>
+                📺 Monitoramento TV - UBS Guarapuava
+                <a href="index.html" class="back-link">← Voltar ao Dashboard</a>
+            </h1>
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('tv-status')">📺 Status das TVs</button>
+                <button class="nav-tab" onclick="showTab('send-videos')">📤 Enviar Vídeos</button>
+                <button class="nav-tab" onclick="showTab('send-log')">📋 Histórico de Envios</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Tab: Status das TVs -->
+        <div id="tv-status" class="tab-content active">
+            <button class="refresh-button" onclick="loadTVStatus()">🔄 Atualizar Status</button>
+            <div class="tv-grid" id="tvGrid">
+                <!-- TVs serão carregadas aqui -->
+            </div>
+        </div>
+
+        <!-- Tab: Enviar Vídeos -->
+        <div id="send-videos" class="tab-content">
+            <div class="alert alert-success" id="successAlert"></div>
+            <div class="alert alert-error" id="errorAlert"></div>
+            
+            <div class="send-section">
+                <h2 class="section-title">📤 Enviar Vídeos para Postos</h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Selecione os Vídeos:</label>
+                        <div class="video-selector" id="videoSelector">
+                            <!-- Vídeos serão carregados aqui -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Selecione os Postos:</label>
+                        <div class="unit-selector" id="unitSelector">
+                            <!-- Unidades serão carregadas aqui -->
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="send-button" id="sendButton" onclick="sendVideos()" disabled>
+                    📤 Enviar Vídeos Selecionados
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab: Histórico de Envios -->
+        <div id="send-log" class="tab-content">
+            <button class="refresh-button" onclick="loadSendLog()">🔄 Atualizar Histórico</button>
+            <div class="log-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Vídeos</th>
+                            <th>Postos</th>
+                            <th>Admin</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logTableBody">
+                        <!-- Logs serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'tv-status';
+        let allVideos = [];
+        let allUnits = [];
+        let selectedVideos = [];
+        let selectedUnits = [];
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTVStatus();
+            loadVideosForSending();
+            loadUnitsForSending();
+            
+            // Auto-refresh do status das TVs a cada 30 segundos
+            setInterval(() => {
+                if (currentTab === 'tv-status') {
+                    loadTVStatus();
+                }
+            }, 30000);
+        });
+
+        // Navegação entre tabs
+        function showTab(tabName) {
+            // Esconder todas as tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remover classe ativa dos botões
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar tab selecionada
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+            
+            // Carregar dados específicos da tab
+            if (tabName === 'send-log') {
+                loadSendLog();
+            }
+        }
+
+        // Carregar status das TVs
+        async function loadTVStatus() {
+            console.log('📺 Tentando carregar status das TVs...');
+            const tvGrid = document.getElementById('tvGrid');
+            
+            try {
+                tvGrid.innerHTML = '<div style="text-align: center; padding: 50px; grid-column: 1/-1;">⏳ Carregando status das TVs...</div>';
+                
+                const response = await fetch('/api/tv-status');
+                console.log('📡 Resposta da API tv-status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                }
+                
+                const tvData = await response.json();
+                console.log('📺 Status das TVs carregado:', tvData.length);
+                
+                if (tvData.length === 0) {
+                    tvGrid.innerHTML = '<p style="text-align: center; color: #7f8c8d; grid-column: 1/-1;">📺 Nenhuma TV cadastrada</p>';
+                    return;
+                }
+                
+                tvGrid.innerHTML = tvData.map(tv => `
+                    <div class="tv-card">
+                        <div class="tv-header">
+                            <div class="tv-name">
+                                <span class="status-indicator ${tv.status === 'online' ? 'indicator-online' : 'indicator-offline'}"></span>
+                                ${tv.name}
+                            </div>
+                            <div class="tv-status ${tv.status === 'online' ? 'status-online' : 'status-offline'}">
+                                ${tv.status === 'online' ? 'Online' : 'Offline'}
+                            </div>
+                        </div>
+                        
+                        <div class="tv-info">
+                            📍 ${tv.location || 'Local não informado'}<br>
+                            🕒 Último sync: ${tv.lastSync ? formatDateTime(tv.lastSync) : 'Nunca'}<br>
+                            📺 ${tv.totalVideos} vídeo(s) ativo(s)
+                        </div>
+                        
+                        <div class="video-list">
+                            ${tv.currentVideos.length === 0 ? 
+                                '<p style="color: #7f8c8d; font-style: italic;">Nenhum vídeo ativo</p>' :
+                                tv.currentVideos.map(video => `
+                                    <div class="video-item">
+                                        <div class="video-title">${video.title}</div>
+                                        <div class="video-category">${video.category}</div>
+                                    </div>
+                                `).join('')
+                            }
+                        </div>
+                    </div>
+                `).join('');
+                
+                console.log('✅ Interface de status das TVs atualizada');
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar status das TVs:', error);
+                tvGrid.innerHTML = `
+                    <div style="text-align: center; padding: 50px; grid-column: 1/-1; color: #e74c3c;">
+                        ❌ Erro ao carregar dados das TVs<br>
+                        <small>${error.message}</small><br>
+                        <button onclick="loadTVStatus()" style="margin-top: 10px; padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            🔄 Tentar Novamente
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Carregar vídeos para envio
+        async function loadVideosForSending() {
+            console.log('🎬 Tentando carregar vídeos...');
+            const videoSelector = document.getElementById('videoSelector');
+            
+            try {
+                videoSelector.innerHTML = '<div style="text-align: center; padding: 20px;">⏳ Carregando vídeos...</div>';
+                
+                const response = await fetch('/api/videos');
+                console.log('📡 Resposta da API videos:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                }
+                
+                allVideos = await response.json();
+                console.log('📹 Vídeos carregados:', allVideos.length);
+                
+                const activeVideos = allVideos.filter(video => video.status === 'active');
+                console.log('✅ Vídeos ativos:', activeVideos.length);
+                
+                if (activeVideos.length === 0) {
+                    videoSelector.innerHTML = '<div style="text-align: center; padding: 20px; color: #7f8c8d;">📹 Nenhum vídeo ativo encontrado</div>';
+                    return;
+                }
+                
+                videoSelector.innerHTML = activeVideos.map(video => `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="video-${video.id}" value="${video.id}" onchange="updateVideoSelection()">
+                        <label for="video-${video.id}">${video.title}</label>
+                        <div class="item-info">${video.category} • ${video.duration || 'N/A'}</div>
+                    </div>
+                `).join('');
+                
+                console.log('✅ Interface de vídeos atualizada');
+                    
+            } catch (error) {
+                console.error('❌ Erro ao carregar vídeos:', error);
+                videoSelector.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #e74c3c;">
+                        ❌ Erro ao carregar vídeos<br>
+                        <small>${error.message}</small><br>
+                        <button onclick="loadVideosForSending()" style="margin-top: 10px; padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            🔄 Tentar Novamente
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Carregar unidades para envio
+        async function loadUnitsForSending() {
+            console.log('🏥 Tentando carregar unidades...');
+            const unitSelector = document.getElementById('unitSelector');
+            
+            try {
+                unitSelector.innerHTML = '<div style="text-align: center; padding: 20px;">⏳ Carregando postos...</div>';
+                
+                const response = await fetch('/api/units');
+                console.log('📡 Resposta da API units:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                }
+                
+                allUnits = await response.json();
+                console.log('🏥 Unidades carregadas:', allUnits.length);
+                
+                const activeUnits = allUnits.filter(unit => unit.status === 'active');
+                console.log('✅ Unidades ativas:', activeUnits.length);
+                
+                if (activeUnits.length === 0) {
+                    unitSelector.innerHTML = '<div style="text-align: center; padding: 20px; color: #7f8c8d;">🏥 Nenhum posto ativo encontrado</div>';
+                    return;
+                }
+                
+                unitSelector.innerHTML = activeUnits.map(unit => `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="unit-${unit.id}" value="${unit.id}" onchange="updateUnitSelection()">
+                        <label for="unit-${unit.id}">${unit.name}</label>
+                        <div class="item-info">${unit.location || 'Local não informado'}</div>
+                    </div>
+                `).join('');
+                
+                console.log('✅ Interface de postos atualizada');
+                    
+            } catch (error) {
+                console.error('❌ Erro ao carregar unidades:', error);
+                unitSelector.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #e74c3c;">
+                        ❌ Erro ao carregar postos<br>
+                        <small>${error.message}</small><br>
+                        <button onclick="loadUnitsForSending()" style="margin-top: 10px; padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            🔄 Tentar Novamente
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Atualizar seleção de vídeos
+        function updateVideoSelection() {
+            selectedVideos = Array.from(document.querySelectorAll('#videoSelector input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            updateSendButton();
+        }
+
+        // Atualizar seleção de unidades
+        function updateUnitSelection() {
+            selectedUnits = Array.from(document.querySelectorAll('#unitSelector input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            updateSendButton();
+        }
+
+        // Atualizar estado do botão de envio
+        function updateSendButton() {
+            const sendButton = document.getElementById('sendButton');
+            const canSend = selectedVideos.length > 0 && selectedUnits.length > 0;
+            
+            sendButton.disabled = !canSend;
+            sendButton.textContent = `📤 Enviar ${selectedVideos.length} vídeo(s) para ${selectedUnits.length} posto(s)`;
+        }
+
+        // Enviar vídeos
+        async function sendVideos() {
+            if (selectedVideos.length === 0 || selectedUnits.length === 0) {
+                showAlert('Selecione pelo menos um vídeo e um posto', 'error');
+                return;
+            }
+
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = true;
+            sendButton.textContent = '📤 Enviando...';
+
+            try {
+                const response = await fetch('/api/send-videos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-User': 'admin-web'
+                    },
+                    body: JSON.stringify({
+                        videoIds: selectedVideos,
+                        targetUnits: selectedUnits,
+                        action: 'send'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert(`✅ ${result.message}`, 'success');
+                    
+                    // Limpar seleções
+                    document.querySelectorAll('#videoSelector input[type="checkbox"]').forEach(cb => cb.checked = false);
+                    document.querySelectorAll('#unitSelector input[type="checkbox"]').forEach(cb => cb.checked = false);
+                    selectedVideos = [];
+                    selectedUnits = [];
+                    updateSendButton();
+                    
+                    // Atualizar status das TVs
+                    loadTVStatus();
+                    
+                } else {
+                    showAlert(`❌ Erro: ${result.error}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Erro ao enviar vídeos:', error);
+                showAlert('❌ Erro de conexão ao enviar vídeos', 'error');
+            }
+
+            sendButton.disabled = false;
+            updateSendButton();
+        }
+
+        // Carregar histórico de envios
+        async function loadSendLog() {
+            try {
+                const response = await fetch('/api/send-log');
+                const logs = await response.json();
+                
+                const logTableBody = document.getElementById('logTableBody');
+                
+                if (logs.length === 0) {
+                    logTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #7f8c8d;">Nenhum envio registrado</td></tr>';
+                    return;
+                }
+                
+                logTableBody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>
+                            ${formatDateTime(log.timestamp)}
+                            <div class="timestamp">${formatRelativeTime(log.timestamp)}</div>
+                        </td>
+                        <td>
+                            <strong>${log.videosCount} vídeo(s)</strong><br>
+                            <small>${log.details.videos.map(v => v.title).join(', ')}</small>
+                        </td>
+                        <td>
+                            <strong>${log.unitsCount} posto(s)</strong><br>
+                            <small>${log.details.units.map(u => u.name).join(', ')}</small>
+                        </td>
+                        <td>${log.admin_user}</td>
+                        <td><span style="color: #27ae60;">✅ Enviado</span></td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+                document.getElementById('logTableBody').innerHTML = '<tr><td colspan="5" style="color: #e74c3c;">Erro ao carregar histórico</td></tr>';
+            }
+        }
+
+        // Mostrar alerta
+        function showAlert(message, type) {
+            const alertId = type === 'success' ? 'successAlert' : 'errorAlert';
+            const alertElement = document.getElementById(alertId);
+            
+            alertElement.textContent = message;
+            alertElement.style.display = 'block';
+            
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Formatação de data/hora
+        function formatDateTime(isoString) {
+            return new Date(isoString).toLocaleString('pt-BR');
+        }
+
+        function formatRelativeTime(isoString) {
+            const now = new Date();
+            const date = new Date(isoString);
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'Agora mesmo';
+            if (diffMins < 60) return `${diffMins} min atrás`;
+            
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return `${diffHours}h atrás`;
+            
+            const diffDays = Math.floor(diffHours / 24);
+            return `${diffDays} dia(s) atrás`;
+        }
+    </script>
+</body>
+</html>

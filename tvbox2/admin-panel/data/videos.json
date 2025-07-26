@@ -1,0 +1,65 @@
+[
+  {
+    "id": "video-vacinacao-infantil",
+    "title": "Importância da Vacinação Infantil",
+    "description": "Vídeo educativo sobre a importância de manter o calendário vacinal das crianças em dia, prevenindo doenças graves.",
+    "category": "vacinacao",
+    "filename": "vacinacao-infantil-2025.mp4",
+    "size": 45678912,
+    "target_units": "all",
+    "priority": 2,
+    "upload_date": "2025-07-25T19:30:00.000Z",
+    "status": "active",
+    "targetUnits": [
+      "ubs-bonsucesso-guarapuava"
+    ],
+    "lastUpdated": "2025-07-26T02:45:20.242Z"
+  },
+  {
+    "id": "video-prevencao-dengue",
+    "title": "Prevenção da Dengue - Cuidados Essenciais",
+    "description": "Como prevenir a dengue eliminando focos do mosquito Aedes aegypti. Dicas práticas para toda a família.",
+    "category": "prevencao",
+    "filename": "prevencao-dengue-2025.mp4",
+    "size": 67234891,
+    "target_units": "all",
+    "priority": 3,
+    "upload_date": "2025-07-25T19:00:00.000Z",
+    "status": "active",
+    "targetUnits": [
+      "ubs-bonsucesso-guarapuava",
+      "ubs-centro-guarapuava"
+    ],
+    "lastUpdated": "2025-07-26T02:41:08.631Z"
+  },
+  {
+    "id": "video-diabetes-cuidados",
+    "title": "Diabetes - Cuidados Diários",
+    "description": "Orientações sobre alimentação, exercícios e uso correto da medicação para pessoas com diabetes.",
+    "category": "diabetes",
+    "filename": "diabetes-cuidados-2025.mp4",
+    "size": 52341567,
+    "target_units": "ubs-centro-guarapuava,ubs-bonsucesso-guarapuava",
+    "priority": 1,
+    "upload_date": "2025-07-25T18:45:00.000Z",
+    "status": "active"
+  },
+  {
+    "id": "video-saude-mental",
+    "title": "Cuidando da Saúde Mental",
+    "description": "Dicas de bem-estar emocional e quando buscar ajuda profissional. Quebrando o preconceito sobre saúde mental.",
+    "category": "saude-mental",
+    "filename": "saude-mental-2025.mp4",
+    "size": 38912345,
+    "target_units": "all",
+    "priority": 1,
+    "upload_date": "2025-07-25T18:15:00.000Z",
+    "status": "active",
+    "targetUnits": [
+      "ubs-centro-guarapuava",
+      "ubs-bonsucesso-guarapuava",
+      "ubs-primavera-guarapuava"
+    ],
+    "lastUpdated": "2025-07-26T02:40:26.174Z"
+  }
+]

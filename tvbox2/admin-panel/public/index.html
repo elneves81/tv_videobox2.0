@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - UBS Guarapuava</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-hospital"></i>
+                    <h1>UBS Guarapuava - Painel Administrativo</h1>
+                </div>
+                <div class="header-stats" id="headerStats">
+                    <div class="stat-item">
+                        <i class="fas fa-video"></i>
+                        <span id="totalVideos">0</span> Vídeos
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clinic-medical"></i>
+                        <span id="totalUnits">0</span> UBS
+                    </div>
+                    <a href="tv-monitor.html" class="stat-item monitor-link" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; text-decoration: none; border-radius: 8px; padding: 12px 20px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); border: 2px solid #fff;">
+                        <i class="fas fa-tv"></i>
+                        📺 Monitorar TVs
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="dashboard">
+                <i class="fas fa-chart-dashboard"></i> Dashboard
+            </button>
+            <button class="tab-btn" data-tab="upload">
+                <i class="fas fa-cloud-upload"></i> Enviar Vídeos
+            </button>
+            <button class="tab-btn" data-tab="videos">
+                <i class="fas fa-video"></i> Gerenciar Vídeos
+            </button>
+            <button class="tab-btn" data-tab="units">
+                <i class="fas fa-hospital-symbol"></i> Unidades UBS
+            </button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="dashboard">
+            <!-- Card de Monitoramento TVs -->
+            <div class="dashboard-card" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; margin-bottom: 30px; border: none; box-shadow: 0 8px 32px rgba(39, 174, 96, 0.3);">
+                <h3 style="color: white; margin-bottom: 20px;">
+                    <i class="fas fa-tv"></i> 📺 Monitoramento das TVs dos Postos
+                </h3>
+                <p style="margin-bottom: 20px; font-size: 16px;">
+                    Veja em tempo real o que está rodando em cada TV dos postos de saúde e envie vídeos específicos.
+                </p>
+                <a href="tv-monitor.html" style="display: inline-block; background: rgba(255,255,255,0.2); color: white; text-decoration: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; border: 2px solid white; transition: all 0.3s ease;">
+                    📺 Acessar Monitoramento das TVs
+                </a>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-chart-bar"></i> Estatísticas Gerais</h3>
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-box">
+                            <div class="stat-number" id="dashTotalVideos">0</div>
+                            <div class="stat-label">Total de Vídeos</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="dashTotalUnits">0</div>
+                            <div class="stat-label">Unidades Ativas</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-tags"></i> Vídeos por Categoria</h3>
+                    <div class="category-chart" id="categoryChart">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-sync"></i> Últimas Sincronizações</h3>
+                    <div class="sync-list" id="syncList">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Tab -->
+        <div class="tab-content" id="upload">
+            <div class="upload-container">
+                <h2><i class="fas fa-cloud-upload"></i> Enviar Novo Vídeo Educativo</h2>
+                
+                <form id="uploadForm" class="upload-form">
+                    <div class="form-group">
+                        <label for="title">Título do Vídeo *</label>
+                        <input type="text" id="title" name="title" required 
+                               placeholder="Ex: Prevenção da Dengue - Cuidados Básicos">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Descrição</label>
+                        <textarea id="description" name="description" rows="3"
+                                  placeholder="Descrição detalhada do conteúdo educativo..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">Categoria *</label>
+                            <select id="category" name="category" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="vacinacao">Vacinação</option>
+                                <option value="prevencao">Prevenção</option>
+                                <option value="diabetes">Diabetes</option>
+                                <option value="hipertensao">Hipertensão</option>
+                                <option value="saude-mental">Saúde Mental</option>
+                                <option value="nutricao">Nutrição</option>
+                                <option value="exercicios">Exercícios</option>
+                                <option value="medicamentos">Medicamentos</option>
+                                <option value="emergencia">Emergência</option>
+                                <option value="geral">Geral</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="priority">Prioridade</label>
+                            <select id="priority" name="priority">
+                                <option value="1">Normal</option>
+                                <option value="2">Alta</option>
+                                <option value="3">Urgente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="targetUnits">Unidades Alvo</label>
+                        <select id="targetUnits" name="targetUnits" multiple>
+                            <option value="all" selected>Todas as Unidades</option>
+                            <!-- Será preenchido dinamicamente -->
+                        </select>
+                        <small>Mantenha Ctrl pressionado para selecionar múltiplas unidades</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="videoFile">Arquivo de Vídeo *</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <input type="file" id="videoFile" name="video" accept="video/*" required>
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload"></i>
+                                <p>Clique para selecionar ou arraste o arquivo aqui</p>
+                                <p class="file-info">Formatos: MP4, AVI, MOV, WMV (máx. 500MB)</p>
+                            </div>
+                        </div>
+                        <div id="fileInfo" class="file-info-display"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="uploadBtn">
+                            <i class="fas fa-upload"></i> Enviar Vídeo
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> Limpar
+                        </button>
+                    </div>
+                </form>
+
+                <div id="uploadProgress" class="upload-progress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Enviando...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Videos Tab -->
+        <div class="tab-content" id="videos">
+            <div class="videos-container">
+                <h2><i class="fas fa-video"></i> Gerenciar Vídeos</h2>
+                
+                <div class="filters">
+                    <select id="filterCategory">
+                        <option value="">Todas as Categorias</option>
+                        <option value="vacinacao">Vacinação</option>
+                        <option value="prevencao">Prevenção</option>
+                        <option value="diabetes">Diabetes</option>
+                        <option value="hipertensao">Hipertensão</option>
+                        <option value="saude-mental">Saúde Mental</option>
+                        <option value="nutricao">Nutrição</option>
+                        <option value="exercicios">Exercícios</option>
+                        <option value="medicamentos">Medicamentos</option>
+                        <option value="emergencia">Emergência</option>
+                        <option value="geral">Geral</option>
+                    </select>
+                    
+                    <button class="btn-primary" onclick="loadVideos()">
+                        <i class="fas fa-refresh"></i> Atualizar
+                    </button>
+                </div>
+
+                <div class="videos-grid" id="videosGrid">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Units Tab -->
+        <div class="tab-content" id="units">
+            <div class="units-container">
+                <h2><i class="fas fa-hospital-symbol"></i> Unidades Básicas de Saúde</h2>
+                
+                <div class="add-unit-form">
+                    <h3>Cadastrar Nova UBS</h3>
+                    <form id="unitForm">
+                        <div class="form-row">
+                            <input type="text" id="unitName" placeholder="Nome da UBS *" required>
+                            <input type="text" id="unitAddress" placeholder="Endereço">
+                            <input type="text" id="unitPhone" placeholder="Telefone">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="units-list" id="unitsList">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

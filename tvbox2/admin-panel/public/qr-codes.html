@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Codes - TV UBS Guarapuava</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            color: #E6E6FA;
+        }
+        
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .qr-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(255,255,255,0.2);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .qr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .post-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        .post-address {
+            font-size: 14px;
+            color: #E6E6FA;
+            margin-bottom: 20px;
+        }
+        
+        .qr-code {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+        
+        .qr-url {
+            font-size: 12px;
+            word-break: break-all;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255,255,255,0.2);
+            margin-top: 40px;
+        }
+        
+        .instructions h3 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .instructions li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .print-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .print-button:hover {
+            background: #45a049;
+        }
+        
+        .download-button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .download-button:hover {
+            background: #1976D2;
+        }
+        
+        .error-message {
+            background-color: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #ffcdd2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+        
+        .dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: white;
+            margin: 0 8px;
+            animation: loading 1.5s infinite ease-in-out;
+            display: inline-block;
+        }
+        
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+        
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .qr-card {
+                background: white;
+                border: 2px solid #ccc;
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+            }
+            
+            .print-button, .download-button, .instructions {
+                display: none;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">📱 QR Codes TV UBS</h1>
+            <p class="subtitle">Códigos QR para acesso aos vídeos educativos</p>
+        </div>
+        
+        <div class="loading" id="loading">
+            <h2>Carregando postos de saúde...</h2>
+            <div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+        
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <h3>❌ Erro ao carregar dados</h3>
+            <p>Não foi possível conectar com o servidor. Verifique se o servidor está rodando.</p>
+            <button onclick="location.reload()" class="print-button">🔄 Tentar Novamente</button>
+        </div>
+        
+        <div class="qr-grid" id="qrGrid" style="display: none;">
+            <!-- QR codes serão gerados aqui -->
+        </div>
+        
+        <div class="instructions" id="instructions" style="display: none;">
+            <h3>📋 Como usar os QR Codes:</h3>
+            <ul>
+                <li><strong>Imprima</strong> os QR codes dos postos que você gerencia</li>
+                <li><strong>Cole na parede</strong> da sala de espera, próximo à TV</li>
+                <li><strong>Pacientes escaneiam</strong> com o celular para assistir os vídeos</li>
+                <li><strong>Funciona offline</strong> - uma vez carregado, não precisa de internet</li>
+                <li><strong>Atualização automática</strong> - sempre mostra os vídeos mais recentes</li>
+            </ul>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="window.print()" class="print-button">🖨️ Imprimir Todos</button>
+                <button onclick="downloadAllQRCodes()" class="download-button">💾 Baixar Imagens</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const SERVER_URL = 'http://localhost:3001';
+        let unitsData = [];
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📱 Sistema QR Codes iniciado');
+            loadUnitsData();
+        });
+        
+        // Carregar dados das unidades
+        async function loadUnitsData() {
+            try {
+                console.log('📡 Carregando dados das unidades...');
+                
+                const response = await fetch(`${SERVER_URL}/api/units`);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                unitsData = data.units || [];
+                
+                console.log('🏥 Unidades carregadas:', unitsData.length);
+                
+                if (unitsData.length === 0) {
+                    showError('Nenhuma unidade encontrada no sistema');
+                    return;
+                }
+                
+                generateQRCodes();
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar unidades:', error);
+                showError('Erro ao conectar com o servidor');
+            }
+        }
+        
+        // Mostrar erro
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'block';
+            errorDiv.querySelector('p').textContent = message;
+        }
+        
+        // Gerar QR Codes
+        async function generateQRCodes() {
+            const qrGrid = document.getElementById('qrGrid');
+            const loading = document.getElementById('loading');
+            const instructions = document.getElementById('instructions');
+            
+            loading.style.display = 'none';
+            qrGrid.style.display = 'grid';
+            instructions.style.display = 'block';
+            
+            for (const unit of unitsData) {
+                await createQRCard(unit);
+            }
+        }
+        
+        // Criar card de QR Code
+        async function createQRCard(unit) {
+            const qrGrid = document.getElementById('qrGrid');
+            
+            // URL para este posto
+            const postUrl = `${SERVER_URL}/tv-posto.html?posto=${unit.id}`;
+            
+            // Criar card
+            const card = document.createElement('div');
+            card.className = 'qr-card';
+            card.id = `qr-${unit.id}`;
+            
+            card.innerHTML = `
+                <div class="post-name">${unit.name}</div>
+                <div class="post-address">${unit.address || 'Endereço não informado'}</div>
+                <div class="qr-code" id="qr-${unit.id}-code">
+                    <div style="color: #666; padding: 20px;">Gerando QR Code...</div>
+                </div>
+                <div class="qr-url">${postUrl}</div>
+            `;
+            
+            qrGrid.appendChild(card);
+            
+            try {
+                // Gerar QR Code
+                const canvas = document.createElement('canvas');
+                await QRCode.toCanvas(canvas, postUrl, {
+                    width: 200,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    }
+                });
+                
+                // Substituir o placeholder pelo QR code
+                const qrCodeDiv = document.getElementById(`qr-${unit.id}-code`);
+                qrCodeDiv.innerHTML = '';
+                qrCodeDiv.appendChild(canvas);
+                
+                console.log(`✅ QR Code gerado para ${unit.name}`);
+                
+            } catch (error) {
+                console.error(`❌ Erro ao gerar QR code para ${unit.name}:`, error);
+                
+                const qrCodeDiv = document.getElementById(`qr-${unit.id}-code`);
+                qrCodeDiv.innerHTML = `
+                    <div style="color: #f44336; padding: 20px;">
+                        ❌ Erro ao gerar QR Code
+                    </div>
+                `;
+            }
+        }
+        
+        // Download de todos os QR codes
+        async function downloadAllQRCodes() {
+            for (const unit of unitsData) {
+                try {
+                    const canvas = document.querySelector(`#qr-${unit.id}-code canvas`);
+                    if (canvas) {
+                        // Converter canvas para blob
+                        canvas.toBlob((blob) => {
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `qr-${unit.id}-${unit.name.replace(/[^a-zA-Z0-9]/g, '')}.png`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Erro ao baixar QR code de ${unit.name}:`, error);
+                }
+            }
+            
+            alert('📥 Download dos QR codes iniciado! Verifique sua pasta de downloads.');
+        }
+        
+        // Função utilitária para copiar URL para clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('📋 URL copiada para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar:', err);
+                // Fallback para navegadores mais antigos
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('📋 URL copiada para a área de transferência!');
+            });
+        }
+        
+        console.log('📱 Sistema QR Codes carregado');
+        console.log('🎯 Servidor:', SERVER_URL);
+    </script>
+</body>
+</html>

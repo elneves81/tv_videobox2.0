@@ -1,0 +1,70 @@
+[
+  {
+    "id": "sync-online-001",
+    "unit_id": "ubs-centro-guarapuava",
+    "video_id": null,
+    "action": "sync_request",
+    "status": "success",
+    "timestamp": "2025-07-26T02:41:17.967Z"
+  },
+  {
+    "id": "sync-online-002",
+    "unit_id": "ubs-bonsucesso-guarapuava",
+    "video_id": null,
+    "action": "sync_request",
+    "status": "success",
+    "timestamp": "2025-07-26T02:42:17.967Z"
+  },
+  {
+    "id": "sync-online-003",
+    "unit_id": "ubs-primavera-guarapuava",
+    "video_id": null,
+    "action": "sync_request",
+    "status": "success",
+    "timestamp": "2025-07-26T02:42:47.967Z"
+  },
+  {
+    "id": "sync-download-001",
+    "unit_id": "ubs-centro-guarapuava",
+    "video_id": "video-vacinacao-infantil",
+    "action": "download",
+    "status": "success",
+    "timestamp": "2025-07-26T02:41:17.967Z"
+  },
+  {
+    "id": "sync-download-002",
+    "unit_id": "ubs-bonsucesso-guarapuava",
+    "video_id": "video-prevencao-dengue",
+    "action": "download",
+    "status": "success",
+    "timestamp": "2025-07-26T02:42:17.967Z"
+  },
+  {
+    "id": "f221c8f5-a5d9-4986-864b-ddefb8d8bb2f",
+    "action": "video_send",
+    "videoIds": [
+      "video-vacinacao-infantil"
+    ],
+    "targetUnits": [
+      "ubs-bonsucesso-guarapuava"
+    ],
+    "videosCount": 1,
+    "unitsCount": 1,
+    "timestamp": "2025-07-26T02:45:20.241Z",
+    "admin_user": "admin-web",
+    "details": {
+      "videos": [
+        {
+          "id": "video-vacinacao-infantil",
+          "title": "Importância da Vacinação Infantil"
+        }
+      ],
+      "units": [
+        {
+          "id": "ubs-bonsucesso-guarapuava",
+          "name": "UBS Bonsucesso"
+        }
+      ]
+    }
+  }
+]

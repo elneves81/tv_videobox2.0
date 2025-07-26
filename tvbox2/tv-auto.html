@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UBS Guarapuava - TV Automática</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+        }
+        
+        .logo {
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 24px;
+            margin-bottom: 40px;
+            color: #B8E6B8;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+        }
+        
+        .dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: white;
+            margin: 0 8px;
+            animation: loading 1.5s infinite ease-in-out;
+        }
+        
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+        
+        .message {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .emergency {
+            background: rgba(255,215,0,0.2);
+            border: 2px solid #FFD700;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .emergency-text {
+            color: #FFD700;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .redirect-info {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🏥</div>
+        <h1 class="title">UBS Guarapuava</h1>
+        <p class="subtitle">Sistema de Informações de Saúde</p>
+        
+        <div class="loading">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <p class="message">Iniciando reprodução automática de vídeos educativos...</p>
+        
+        <div class="info">
+            <p><strong>📺 Modo TV Automático Ativado</strong></p>
+            <p>Os vídeos educativos serão reproduzidos continuamente</p>
+            <p>Sem necessidade de interação manual</p>
+        </div>
+        
+        <div class="emergency">
+            <p class="emergency-text">🚨 Emergência: SAMU 192 • Bombeiros 193</p>
+        </div>
+    </div>
+    
+    <div class="redirect-info">
+        Redirecionando automaticamente em <span id="countdown">3</span> segundos...
+    </div>
+    
+    <script>
+        // Configurações
+        const REDIRECT_DELAY = 3000; // 3 segundos
+        const TV_BOX_URL = 'http://localhost:8083'; // URL do TV Box
+        
+        let countdown = 3;
+        const countdownElement = document.getElementById('countdown');
+        
+        // Atualizar countdown
+        const countdownTimer = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(countdownTimer);
+            }
+        }, 1000);
+        
+        // Redirecionar automaticamente
+        setTimeout(() => {
+            // Tentar abrir o TV Box em tela cheia
+            try {
+                // Para TV Boxes reais, usar URL específica do app
+                window.location.href = TV_BOX_URL;
+            } catch (error) {
+                console.log('Erro ao redirecionar:', error);
+                // Fallback: mostrar instruções
+                showFallbackInstructions();
+            }
+        }, REDIRECT_DELAY);
+        
+        function showFallbackInstructions() {
+            document.querySelector('.container').innerHTML = `
+                <div class="logo">📺</div>
+                <h1 class="title">Acesso Manual</h1>
+                <p class="subtitle">Abra o link abaixo para iniciar os vídeos:</p>
+                <div class="info">
+                    <p><strong>Link do TV Box:</strong></p>
+                    <p style="font-size: 24px; color: #FFD700; margin: 10px 0;">
+                        <a href="${TV_BOX_URL}" style="color: #FFD700;">${TV_BOX_URL}</a>
+                    </p>
+                    <p><em>Clique no link ou digite no navegador</em></p>
+                </div>
+                <div class="emergency">
+                    <p class="emergency-text">🚨 Emergência: SAMU 192 • Bombeiros 193</p>
+                </div>
+            `;
+        }
+        
+        // Detecção de dispositivo TV Box
+        function isTVBox() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            return userAgent.includes('tv') || 
+                   userAgent.includes('android tv') || 
+                   userAgent.includes('smart tv') ||
+                   window.screen.width >= 1920; // TVs geralmente têm resolução alta
+        }
+        
+        // Configurações específicas para TV
+        if (isTVBox()) {
+            console.log('TV Box detectado - configurando para reprodução automática');
+            document.body.style.cursor = 'none'; // Esconder cursor em TVs
+        }
+        
+        // Prevenir interação acidental
+        document.addEventListener('keydown', (e) => {
+            // Permitir apenas teclas essenciais
+            const allowedKeys = ['Escape', 'F5', 'F11'];
+            if (!allowedKeys.includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+        
+        // Log para debugging
+        console.log('🏥 UBS Guarapuava - Sistema TV Automático');
+        console.log('📺 Redirecionando para:', TV_BOX_URL);
+        console.log('⏱️ Delay de redirecionamento:', REDIRECT_DELAY + 'ms');
+    </script>
+</body>
+</html>

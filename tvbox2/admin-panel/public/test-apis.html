@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste das APIs - UBS Guarapuava</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #2980b9;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-color: #27ae60;
+            background-color: #d4edda;
+        }
+        .error {
+            border-color: #e74c3c;
+            background-color: #f8d7da;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste das APIs - UBS Guarapuava</h1>
+    
+    <div class="test-section">
+        <h2>📹 API de Vídeos</h2>
+        <button class="test-button" onclick="testAPI('/api/videos', 'videos')">Testar /api/videos</button>
+        <div id="videos-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🏥 API de Unidades</h2>
+        <button class="test-button" onclick="testAPI('/api/units', 'units')">Testar /api/units</button>
+        <div id="units-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📺 API de Status das TVs</h2>
+        <button class="test-button" onclick="testAPI('/api/tv-status', 'tv-status')">Testar /api/tv-status</button>
+        <div id="tv-status-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 API de Estatísticas</h2>
+        <button class="test-button" onclick="testAPI('/api/dashboard/stats', 'stats')">Testar /api/dashboard/stats</button>
+        <div id="stats-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📋 API de Log de Envios</h2>
+        <button class="test-button" onclick="testAPI('/api/send-log', 'send-log')">Testar /api/send-log</button>
+        <div id="send-log-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🌐 Teste de Conectividade</h2>
+        <button class="test-button" onclick="testConnectivity()">Testar Conexão com Servidor</button>
+        <div id="connectivity-result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function testAPI(endpoint, resultId) {
+            const resultDiv = document.getElementById(resultId + '-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = '⏳ Testando ' + endpoint + '...';
+            
+            const startTime = Date.now();
+            
+            try {
+                console.log('🧪 Testando:', endpoint);
+                
+                const response = await fetch(endpoint);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                console.log('📡 Resposta:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ SUCESSO (${duration}ms)
+                
+Status: ${response.status} ${response.statusText}
+Content-Type: ${response.headers.get('content-type')}
+Tamanho: ${JSON.stringify(data).length} caracteres
+
+Dados recebidos:
+${JSON.stringify(data, null, 2)}`;
+                
+                console.log('✅ Dados recebidos:', data);
+                
+            } catch (error) {
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                console.error('❌ Erro:', error);
+                
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ ERRO (${duration}ms)
+
+Erro: ${error.message}
+
+Possíveis causas:
+- Servidor não está rodando na porta 3001
+- Firewall/proxy bloqueando conexão
+- Problema de CORS
+- Endpoint não existe
+- Dados corrompidos no servidor
+
+Soluções:
+1. Verificar se o servidor está rodando: node server-simple.js
+2. Verificar logs do servidor no terminal
+3. Tentar acessar http://localhost:3001 diretamente
+4. Verificar arquivos em admin-panel/data/`;
+            }
+        }
+        
+        async function testConnectivity() {
+            const resultDiv = document.getElementById('connectivity-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = '⏳ Testando conectividade...';
+            
+            try {
+                // Teste 1: Ping básico
+                const pingResponse = await fetch('/');
+                const pingOk = pingResponse.ok;
+                
+                // Teste 2: Verificar se é o servidor correto
+                const htmlContent = await pingResponse.text();
+                const isCorrectServer = htmlContent.includes('UBS Guarapuava');
+                
+                // Teste 3: Testar API básica
+                let apiWorking = false;
+                try {
+                    const apiResponse = await fetch('/api/dashboard/stats');
+                    apiWorking = apiResponse.ok;
+                } catch (e) {
+                    apiWorking = false;
+                }
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `🌐 TESTE DE CONECTIVIDADE
+
+✅ Servidor respondendo: ${pingOk ? 'SIM' : 'NÃO'}
+✅ Servidor UBS correto: ${isCorrectServer ? 'SIM' : 'NÃO'}  
+✅ APIs funcionando: ${apiWorking ? 'SIM' : 'NÃO'}
+
+URL atual: ${window.location.origin}
+User Agent: ${navigator.userAgent}
+Conexão: ${navigator.onLine ? 'Online' : 'Offline'}
+
+Status: ${pingOk && isCorrectServer && apiWorking ? '🟢 TUDO OK' : '🟡 PROBLEMAS DETECTADOS'}`;
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ ERRO DE CONECTIVIDADE
+
+Erro: ${error.message}
+
+Verificações:
+1. Servidor está rodando? node server-simple.js
+2. Porta 3001 está livre? netstat -ano | findstr :3001
+3. Firewall não está bloqueando?
+4. URL correta? http://localhost:3001
+
+Status: 🔴 SERVIDOR INACESSÍVEL`;
+            }
+        }
+        
+        // Teste automático ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🧪 Página de testes carregada');
+            console.log('🔗 URL atual:', window.location.href);
+            
+            // Fazer teste de conectividade automaticamente
+            setTimeout(() => {
+                testConnectivity();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
