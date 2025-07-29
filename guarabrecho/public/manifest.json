@@ -1,0 +1,25 @@
+{
+  "name": "GuaraBrechó - Marketplace Sustentável",
+  "short_name": "GuaraBrechó",
+  "description": "Marketplace digital para compra, venda, troca e doação de produtos usados em Guarapuava. Focado no engajamento da comunidade local e comércio sustentável.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "categories": ["shopping", "lifestyle", "social"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

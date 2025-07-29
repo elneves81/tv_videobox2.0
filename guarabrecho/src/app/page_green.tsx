@@ -225,7 +225,7 @@ export default function Home() {
               Junte-se à comunidade GuaraBrechó e faça parte da economia circular de Guarapuava
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/cadastro">
+              <Link href="/register">
                 <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 shadow-2xl hover-lift border-4 border-white font-bold text-lg px-8 py-4">
                   Criar Conta Grátis
                 </Button>

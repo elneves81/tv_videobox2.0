@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -16,12 +16,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -38,21 +38,47 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  phone         String?
-  whatsapp      String?
-  neighborhood  String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  name              String?
+  email             String    @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  phone             String?
+  whatsapp          String?
+  neighborhood      String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  isAdmin           Boolean   @default(false)
+  isBlocked         Boolean   @default(false)
+  blockedAt         DateTime?
+  blockedReason     String?
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Subscription fields
+  currentPlan       PlanType  @default(FREE)
+  planExpiresAt     DateTime?
+  stripeCustomerId  String?
+  mercadoPagoUserId String?
 
   accounts Account[]
   sessions Session[]
   products Product[]
+  
+  // Chat relations
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  conversations    ConversationParticipant[]
+
+  // Review relations
+  givenReviews     Review[] @relation("GivenReviews")
+  receivedReviews  Review[] @relation("ReceivedReviews")
+
+  // Monetization relations
+  subscriptions    Subscription[]
+  highlightPurchases HighlightPurchase[]
 
   @@map("users")
 }
@@ -81,13 +107,18 @@ model Category {
 model Product {
   id          String      @id @default(cuid())
   title       String
-  description String      @db.Text
-  price       Decimal?    @db.Decimal(10, 2)
+  description String
+  price       Float?
   condition   Condition
   type        ProductType
   status      Status      @default(ACTIVE)
-  images      String[]    @default([])
+  images      String      @default("")
   neighborhood String
+  
+  // Highlight fields
+  isHighlighted Boolean      @default(false)
+  highlightType HighlightType?
+  highlightExpiresAt DateTime?
   
   userId     String
   categoryId String
@@ -98,7 +129,61 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Chat relations
+  conversations Conversation[]
+  
+  // Review relations
+  reviews Review[]
+
+  // Monetization relations
+  highlightPurchases HighlightPurchase[]
+
   @@map("products")
+}
+
+model Conversation {
+  id          String    @id @default(cuid())
+  productId   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  product      Product? @relation(fields: [productId], references: [id])
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime @default(now())
+  lastReadAt     DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  senderId       String
+  receiverId     String
+  content        String
+  messageType    MessageType @default(TEXT)
+  isRead         Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver     User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
 }
 
 enum Condition {
@@ -118,4 +203,159 @@ enum Status {
   ACTIVE
   SOLD
   INACTIVE
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  PRODUCT_LINK
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  rating      Int       @db.SmallInt // 1 to 5 stars
+  comment     String?
+  reviewType  ReviewType
+  
+  reviewerId  String    // User who gives the review
+  revieweeId  String    // User who receives the review
+  productId   String?   // Optional: related to a specific product transaction
+  
+  reviewer    User      @relation("GivenReviews", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewee    User      @relation("ReceivedReviews", fields: [revieweeId], references: [id], onDelete: Cascade)
+  product     Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Prevent multiple reviews for the same transaction
+  @@unique([reviewerId, revieweeId, productId])
+  @@map("reviews")
+}
+
+enum ReviewType {
+  BUYER_TO_SELLER
+  SELLER_TO_BUYER
+}
+
+// Monetization Enums
+enum PlanType {
+  FREE
+  PREMIUM
+  PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PENDING
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum HighlightType {
+  BASIC
+  PREMIUM
+  GOLD
+}
+
+// Monetization Models
+model Plan {
+  id          String @id @default(cuid())
+  name        PlanType @unique
+  displayName String
+  price       Float
+  maxListings Int    // -1 for unlimited
+  maxImages   Int    // -1 for unlimited
+  canHighlight Boolean @default(false)
+  hasAnalytics Boolean @default(false)
+  priority    Int    @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  subscriptions Subscription[]
+  
+  @@map("plans")
+}
+
+model Subscription {
+  id                String @id @default(cuid())
+  userId            String
+  planName          PlanType
+  status            SubscriptionStatus @default(PENDING)
+  amount            Float
+  currency          String @default("BRL")
+  
+  // Payment provider fields
+  mercadoPagoId     String?
+  stripeSubscriptionId String?
+  
+  // Subscription period
+  startDate         DateTime
+  endDate           DateTime
+  renewsAt          DateTime?
+  
+  // Payment tracking
+  lastPaymentAt     DateTime?
+  nextPaymentAt     DateTime?
+  
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan              Plan @relation(fields: [planName], references: [name])
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("subscriptions")
+}
+
+model HighlightPurchase {
+  id                String @id @default(cuid())
+  userId            String
+  productId         String
+  highlightType     HighlightType
+  amount            Float
+  currency          String @default("BRL")
+  status            PaymentStatus @default(PENDING)
+  
+  // Payment provider fields
+  mercadoPagoPaymentId String?
+  stripePaymentIntentId String?
+  
+  // Highlight period
+  startDate         DateTime?
+  endDate           DateTime?
+  duration          Int // days
+  
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product           Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("highlight_purchases")
+}
+
+model Analytics {
+  id              String @id @default(cuid())
+  userId          String
+  date            DateTime @db.Date
+  
+  // Product metrics
+  productViews    Int @default(0)
+  productClicks   Int @default(0)
+  whatsappClicks  Int @default(0)
+  
+  // General metrics
+  profileViews    Int @default(0)
+  searchAppearances Int @default(0)
+  
+  @@unique([userId, date])
+  @@map("analytics")
 }

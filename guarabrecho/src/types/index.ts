@@ -1,9 +1,32 @@
+export interface AdvancedSearchFilters {
+  search?: string;
+  category?: string;
+  type?: string;
+  condition?: string;
+  neighborhood?: string;
+  priceMin?: number;
+  priceMax?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: 'createdAt' | 'price' | 'title';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  _count?: {
+    products: number;
+  };
+}
+
 export interface Product {
   id: string
   title: string
   description: string
   price: number
-  images: string[]
+  images: string[] | string
   category: ProductCategory
   condition: ProductCondition
   transactionType: TransactionType
@@ -48,27 +71,10 @@ export enum TransactionType {
   DOACAO = 'DOACAO',
 }
 
-export const NEIGHBORHOODS = [
-  'Centro',
-  'Trianon',
-  'Batel',
-  'Santana',
-  'Primavera',
-  'Carli',
-  'Boqueirão',
-  'Paz',
-  'Morro Alto',
-  'Campo Belo',
-  'Industrial',
-  'Xarquinho',
-  'Jardim América',
-  'São Cristóvão',
-  'Virmond',
-  'Vila Carli',
-  'Parque das Américas',
-  'Santa Cruz',
-  'Outro',
-] as const
+// Importar bairros da lista completa
+import { GUARAPUAVA_NEIGHBORHOODS } from '@/lib/data/neighborhoods';
+
+export const NEIGHBORHOODS = GUARAPUAVA_NEIGHBORHOODS;
 
 export const CATEGORY_LABELS = {
   [ProductCategory.ROUPAS]: 'Roupas & Acessórios',

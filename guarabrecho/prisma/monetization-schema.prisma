@@ -1,0 +1,130 @@
+// Schema para sistema de monetização
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String   @unique // "FREE", "PREMIUM", "PRO"
+  displayName String   // "Gratuito", "Premium", "Pro"
+  price       Float    // Preço em reais
+  currency    String   @default("BRL")
+  
+  // Limites do plano
+  maxListings     Int     // Máximo de anúncios ativos
+  maxImages       Int     // Máximo de imagens por produto
+  canHighlight    Boolean @default(false) // Pode destacar produtos
+  hasAnalytics    Boolean @default(false) // Tem acesso a analytics
+  priority        Int     @default(0) // Prioridade nas buscas (maior = mais prioridade)
+  
+  // Features
+  features        String[] // ["unlimited_photos", "priority_support", "analytics"]
+  
+  // Metadata
+  description     String?
+  popular         Boolean @default(false) // Plano mais popular
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  subscriptions   Subscription[]
+}
+
+model Subscription {
+  id              String          @id @default(cuid())
+  userId          String
+  planId          String
+  
+  // Status da assinatura
+  status          SubscriptionStatus @default(ACTIVE)
+  
+  // Datas
+  startDate       DateTime        @default(now())
+  endDate         DateTime?       // null = vitalício
+  canceledAt      DateTime?
+  
+  // Pagamento
+  stripeSubscriptionId String?     @unique
+  priceAtPurchase Float          // Preço pago (para histórico)
+  
+  // Metadata
+  metadata        Json?           // Dados extras do pagamento
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relacionamentos
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            Plan            @relation(fields: [planId], references: [id])
+  
+  @@unique([userId, status]) // Um usuário só pode ter uma assinatura ativa
+}
+
+model HighlightPurchase {
+  id          String   @id @default(cuid())
+  userId      String
+  productId   String
+  
+  // Tipo de destaque
+  type        HighlightType // SIMPLE, PREMIUM, SUPER
+  
+  // Duração
+  startDate   DateTime @default(now())
+  endDate     DateTime
+  
+  // Pagamento
+  price       Float
+  stripePaymentId String? @unique
+  
+  // Status
+  status      PaymentStatus @default(PENDING)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+  PENDING
+}
+
+enum HighlightType {
+  SIMPLE      // R$ 5 por 7 dias
+  PREMIUM     // R$ 15 por 30 dias
+  SUPER       // R$ 35 por 30 dias + homepage
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Adicionar ao modelo User:
+model User {
+  // ... campos existentes ...
+  
+  // Monetização
+  subscriptions       Subscription[]
+  highlightPurchases  HighlightPurchase[]
+  
+  // Cache do plano atual (para performance)
+  currentPlanId       String?
+  currentPlan         Plan?   @relation(fields: [currentPlanId], references: [id])
+}
+
+// Adicionar ao modelo Product:
+model Product {
+  // ... campos existentes ...
+  
+  // Destaque
+  highlightPurchases  HighlightPurchase[]
+  isHighlighted       Boolean @default(false)
+  highlightType       HighlightType?
+  highlightUntil      DateTime?
+}

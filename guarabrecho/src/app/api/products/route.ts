@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { Condition, ProductType } from "@prisma/client"
+import { prisma } from '@/lib/prisma'
 
-// GET - Listar produtos com filtros
+// GET - Listar produtos com filtros avançados
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
@@ -14,6 +15,12 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get("type")
     const condition = searchParams.get("condition")
     const search = searchParams.get("search")
+    const priceMin = searchParams.get("priceMin")
+    const priceMax = searchParams.get("priceMax")
+    const sortBy = searchParams.get("sortBy") || "createdAt"
+    const sortOrder = searchParams.get("sortOrder") || "desc"
+    const dateFrom = searchParams.get("dateFrom")
+    const dateTo = searchParams.get("dateTo")
 
     const skip = (page - 1) * limit
 
@@ -43,6 +50,30 @@ export async function GET(req: NextRequest) {
       where.condition = condition
     }
 
+    // Filtro de preço
+    if (priceMin || priceMax) {
+      where.price = {}
+      if (priceMin) {
+        where.price.gte = parseFloat(priceMin)
+      }
+      if (priceMax) {
+        where.price.lte = parseFloat(priceMax)
+      }
+    }
+
+    // Filtro de data
+    if (dateFrom || dateTo) {
+      where.createdAt = {}
+      if (dateFrom) {
+        where.createdAt.gte = new Date(dateFrom)
+      }
+      if (dateTo) {
+        const toDate = new Date(dateTo)
+        toDate.setHours(23, 59, 59, 999) // Final do dia
+        where.createdAt.lte = toDate
+      }
+    }
+
     if (search) {
       where.OR = [
         {
@@ -58,6 +89,16 @@ export async function GET(req: NextRequest) {
           }
         }
       ]
+    }
+
+    // Ordenação dinâmica
+    const orderBy: any = {}
+    if (sortBy === "price") {
+      orderBy.price = sortOrder
+    } else if (sortBy === "title") {
+      orderBy.title = sortOrder
+    } else {
+      orderBy.createdAt = sortOrder
     }
 
     const [products, total] = await Promise.all([
@@ -78,9 +119,7 @@ export async function GET(req: NextRequest) {
             }
           }
         },
-        orderBy: {
-          createdAt: "desc"
-        },
+        orderBy,
         skip,
         take: limit
       }),
@@ -117,6 +156,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    let requestData;
+    try {
+      requestData = await req.json()
+    } catch (parseError) {
+      console.error("Erro ao fazer parse do JSON:", parseError)
+      return NextResponse.json(
+        { error: "Dados inválidos no corpo da requisição" },
+        { status: 400 }
+      )
+    }
+
     const {
       title,
       description,
@@ -126,12 +176,30 @@ export async function POST(req: NextRequest) {
       images,
       neighborhood,
       categoryId
-    } = await req.json()
+    } = requestData
 
     // Validações básicas
     if (!title || !description || !condition || !type || !neighborhood || !categoryId) {
       return NextResponse.json(
         { error: "Campos obrigatórios: título, descrição, condição, tipo, bairro e categoria" },
+        { status: 400 }
+      )
+    }
+
+    // Validar enums
+    const validConditions = Object.values(Condition);
+    const validTypes = Object.values(ProductType);
+
+    if (!validConditions.includes(condition as Condition)) {
+      return NextResponse.json(
+        { error: `Condição inválida. Valores aceitos: ${validConditions.join(', ')}` },
+        { status: 400 }
+      )
+    }
+
+    if (!validTypes.includes(type as ProductType)) {
+      return NextResponse.json(
+        { error: `Tipo inválido. Valores aceitos: ${validTypes.join(', ')}` },
         { status: 400 }
       )
     }
@@ -148,17 +216,35 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Processar imagens de forma mais segura
+    let processedImages = '';
+    try {
+      if (images) {
+        // Importar função de compressão de forma mais segura
+        const { compressMultipleImages } = await import('@/lib/image-utils');
+        
+        // Comprimir imagens antes de salvar no banco
+        let imageString = Array.isArray(images) ? images.join(',') : String(images);
+        processedImages = await compressMultipleImages(imageString);
+      }
+    } catch (imageError) {
+      console.warn("Erro ao processar imagens, salvando sem compressão:", imageError)
+      // Se falhar na compressão, salva as imagens originais
+      processedImages = Array.isArray(images) ? images.join(',') : String(images || '');
+    }
+    
+    // Criar produto
     const product = await prisma.product.create({
       data: {
-        title,
-        description,
-        price: price ? parseFloat(price) : null,
-        condition,
-        type,
-        images: images || [],
-        neighborhood,
+        title: String(title),
+        description: String(description),
+        price: price ? parseFloat(String(price)) : null,
+        condition: condition as Condition,
+        type: type as ProductType,
+        images: processedImages,
+        neighborhood: String(neighborhood),
         userId: session.user.id,
-        categoryId
+        categoryId: String(categoryId)
       },
       include: {
         category: {
@@ -182,9 +268,13 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error("Erro ao criar produto:", error)
+    console.error("Erro detalhado ao criar produto:", {
+      message: error instanceof Error ? error.message : "Erro desconhecido",
+      stack: error instanceof Error ? error.stack : undefined,
+      error
+    })
     return NextResponse.json(
-      { error: "Erro interno do servidor" },
+      { error: "Erro interno do servidor", details: error instanceof Error ? error.message : "Erro desconhecido" },
       { status: 500 }
     )
   }

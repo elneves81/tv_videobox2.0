@@ -14,12 +14,15 @@ GuaraBrechó is a digital marketplace for buying, selling, trading, and donating
 - WhatsApp integration for contact functionality
 
 ## Key Features to Implement
-1. User authentication and registration
-2. Product listing with photos, descriptions, location (neighborhood), price, and category
-3. Search and filter functionality by neighborhood and category
-4. Product detail pages with WhatsApp contact integration
-5. User dashboard for managing personal listings
-6. Responsive design optimized for mobile devices
+1. User authentication and registration ✅
+2. Product listing with photos, descriptions, location (neighborhood), price, and category ✅
+3. **Homepage with dealership-style layout** - Clean product showcase ✅
+4. **FeaturedProductCard component** - Optimized for product display ✅
+5. **Image compression and optimization** ✅
+6. Search and filter functionality by neighborhood and category
+7. Product detail pages with WhatsApp contact integration ✅
+8. User dashboard for managing personal listings ✅
+9. Responsive design optimized for mobile devices ✅
 
 ## Code Style Guidelines
 - Use TypeScript for all components and utilities
@@ -38,6 +41,11 @@ GuaraBrechó is a digital marketplace for buying, selling, trading, and donating
 - Follow accessibility best practices
 
 ## Specific Implementation Notes
+- **Homepage Layout**: Dealership-style design focused on product showcase
+- **FeaturedProductCard**: Component with prominent pricing, images, and clean information layout
+- **Image Optimization**: Automatic compression and resizing for web performance
+- **Product Filtering**: Smart filtering prioritizing products with images
+- **Responsive Grid**: 4-column layout on desktop, adapting to smaller screens
 - WhatsApp contact should open WhatsApp Web/app with pre-filled message
 - Products should include neighborhood information for local focus
 - Categories should include: Roupas, Eletrônicos, Móveis, Livros, Esportes, etc.

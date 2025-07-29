@@ -1,0 +1,92 @@
+==================================================
+  SISTEMA DE AGENDAMENTO DE SALAS - FUNCIONANDO!
+==================================================
+
+✅ BACKEND NODE.JS - Rodando na porta 8080
+✅ MYSQL (XAMPP) - Banco "salas_ag" configurado  
+✅ AUTENTICAÇÃO - Login funcionando
+
+==================================================
+         CREDENCIAIS DE TESTE
+==================================================
+
+👤 ADMINISTRADOR:
+   Email: admin@salasag.com
+   Senha: admin123
+
+👤 USUÁRIOS COMUNS:
+   Email: joao@empresa.com
+   Senha: admin123
+   
+   Email: maria@empresa.com  
+   Senha: admin123
+
+==================================================
+           ENDPOINTS DA API
+==================================================
+
+🔗 Status: GET http://localhost:8080/api/status
+
+🔐 Autenticação:
+   POST http://localhost:8080/api/auth/login
+   POST http://localhost:8080/api/auth/register
+
+👥 Usuários (requer autenticação):
+   GET http://localhost:8080/api/usuarios
+
+🏢 Salas (requer autenticação):
+   GET http://localhost:8080/api/salas
+   POST http://localhost:8080/api/salas (admin apenas)
+
+📅 Agendamentos (requer autenticação):
+   GET http://localhost:8080/api/agendamentos
+   POST http://localhost:8080/api/agendamentos
+
+==================================================
+            EXEMPLO DE USO
+==================================================
+
+1. FAZER LOGIN:
+   POST http://localhost:8080/api/auth/login
+   {
+     "email": "admin@salasag.com",
+     "senha": "admin123"
+   }
+
+2. USAR TOKEN RETORNADO:
+   Headers: Authorization: Bearer SEU_TOKEN_AQUI
+
+3. LISTAR SALAS:
+   GET http://localhost:8080/api/salas
+   (com header Authorization)
+
+4. CRIAR AGENDAMENTO:
+   POST http://localhost:8080/api/agendamentos
+   {
+     "sala_id": 1,
+     "titulo": "Reunião de Equipe",
+     "descricao": "Reunião semanal",
+     "data_inicio": "2025-07-18 14:00:00",
+     "data_fim": "2025-07-18 15:00:00"
+   }
+
+==================================================
+       FERRAMENTAS PARA TESTE
+==================================================
+
+💻 Postman: https://www.postman.com/
+💻 Insomnia: https://insomnia.rest/
+💻 curl (linha de comando)
+💻 PowerShell (Invoke-RestMethod)
+
+==================================================
+           PRÓXIMOS PASSOS
+==================================================
+
+🔹 Configurar frontend Angular
+🔹 Criar interface web
+🔹 Implementar calendário visual
+🔹 Adicionar notificações
+🔹 Deploy em produção
+
+==================================================
